@@ -37,9 +37,9 @@
   };
 
   config.keymaps = [
-    { mode = [ "n" ]; key = "<c-p>";   action = "<cmd>Telescope find_files<cr>"; }
-    { mode = [ "n" ]; key = "<c-s-p>"; action = "<cmd>Telescope commands<cr>";   }
-    { mode = [ "n" ]; key = "<c-k>";   action = "<cmd>Telescope buffers<cr>";    }
-    { mode = [ "n" ]; key = "<c-s-k>"; action = "<cmd>Telescope keymaps<cr>";    }
+    { mode = [ "n" ]; key = "<C-p>";   action = "<cmd>Telescope find_files<cr>"; }
+    { mode = [ "n" ]; key = "<C-S-p>"; action = "<cmd>Telescope commands<cr>";   }
+    { mode = [ "n" ]; key = "<C-k>";   action = "<cmd>Telescope buffers<cr>";    }
+    { mode = [ "n" ]; key = "<C-S-k>"; action = "<cmd>Telescope keymaps<cr>";    }
   ];
 }

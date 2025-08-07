@@ -11,87 +11,122 @@
     nixvim.url = "github:nix-community/nixvim";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    devenv.url = "github:cachix/devenv";
-    nix2container.url = "github:nlewo/nix2container";
-    nix2container.inputs.nixpkgs.follows = "nixpkgs";
-    mk-shell-bin.url = "github:rrbutani/nix-mk-shell-bin";
   };
 
-  nixConfig = {
-    extra-trusted-public-keys = "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=";
-    extra-substituters = "https://devenv.cachix.org";
-  };
+  outputs = inputs@{ self, flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; }
+      ({ withSystem, flake-parts-lib, ... }:
+        let
 
-  outputs = inputs@{ self, flake-parts, devenv-root, ... }:
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [
-        inputs.devenv.flakeModule
-        inputs.nixvim.flakeModules.default
-      ];
+          inherit (flake-parts-lib) importApply;
 
-      # systems = inputs.nixpkgs.lib.systems.flakeExposed;
-      systems = [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
+          nixvimModules.default = ./config;
 
-      nixvim = {
-        packages = {
-          enable = true;
-          nameFunction = name: if name == "default" then "nvim" else "nvim-" + name;
-        };
-
-        checks = {
-          enable = true;
-          nameFunction = name: "nixvim-" + name + "-test";
-        };
-      };
-
-      perSystem = { config, self', inputs', pkgs, system, ... }: {
-        # Per-system attributes can be defined here. The self' and inputs'
-        # module parameters provide easy access to attributes of the same
-        # system.
-
-        packages = {
-          default = self'.packages.nvim;
-          nvimpager = pkgs.nvimpager.override {
-            neovim = self'.packages.nvim;
+          flakeModules.default = importApply ./flake-module.nix {
+            inherit withSystem;
+            inherit nixvimModules;
+            inputs.nixvim = inputs.nixvim;
           };
-        };
 
-        nixvimConfigurations = {
-          default = inputs.nixvim.lib.evalNixvim {
-            inherit system;
-            modules = [
-              { _module.args.inputs = inputs'; }
-              self.nixvimModules.default
-            ];
-          };
-        };
+          nixvimConfig = options@{ system, modules ? [], ... }:
+            inputs.nixvim.lib.evalNixvim (
+              options // {
+                modules = modules ++ [
+                  nixvimModules.default
+                ];
+              }
+            );
 
-        devenv.shells.default = {
-          name = "nixvim";
+        in
 
-          # https://devenv.sh/reference/options/
-          packages = [
-            config.packages.default
-            self'.packages.nvim
+        {
+          imports = [
+            flakeModules.default
+            inputs.flake-parts.flakeModules.partitions
           ];
 
-          languages.nix.enable = true;
+          # systems = inputs.nixpkgs.lib.systems.flakeExposed;
+          systems = [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
 
-          git-hooks.hooks = {
-            markdownlint = {
-              enable = true;
-              settings.configuration = {
-                MD013.line_length = 120;
+          perSystem = { config, self', inputs', pkgs, system, ... }: {
+            # Per-system attributes can be defined here. The self' and inputs'
+            # module parameters provide easy access to attributes of the same
+            # system.
+
+            nixvimConfigurations = {
+              default = nixvimConfig {
+                inherit system;
               };
             };
 
-            nil.enable = true;
+            packages = {
+              default = self'.packages.nvim;
+              nvimpager = pkgs.nvimpager.override {
+                neovim = self'.packages.nvim;
+              };
+            };
           };
-        };
-      };
 
-      flake.nixvimModules = {
-        default = ./config;
-      };
-    };
+          flake = {
+            # The usual flake attributes can be defined here, including system-
+            # agnostic ones like nixosModule and system-enumerating ones, although
+            # those are more easily expressed in perSystem.
+
+            inherit flakeModules;
+            inherit nixvimModules;
+
+            lib = {
+              nixvimConfig = nixvimConfig;
+            };
+          };
+
+          partitionedAttrs = {
+            devShells = "dev";
+          #templates = "dev";
+          };
+
+          partitions.dev = {
+            extraInputsFlake = ./dev;
+
+            module = { inputs, ... }: {
+              imports = [ inputs.devenv.flakeModule ];
+
+              perSystem = { config, self', inputs', pkgs, system, ... }: {
+                devenv.shells.default = {
+                  name = "nixvim-config";
+
+                  # https://devenv.sh/reference/options/
+                  packages = [
+                    config.packages.default
+                  ];
+
+                  languages.nix.enable = true;
+
+                  git-hooks.hooks = {
+                    markdownlint = {
+                      enable = true;
+                      settings.configuration = {
+                        MD013.line_length = 120;
+                      };
+                    };
+
+                    nil.enable = true;
+                  };
+                };
+              };
+
+#              flake.templates = inputs.haumea.lib.load {
+#                src = ./templates;
+#                loader = [({ matches = _: false; })];
+#
+#                transformer = cursor: mod:
+#                  if builtins.length cursor > 0 then
+#                    ./. + "/${builtins.head cursor}"
+#                  else
+#                    mod;
+#              };
+            };
+          };
+        }
+      );
 }

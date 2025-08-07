@@ -55,6 +55,8 @@
         };
       */
 
+      undotree.enable = true;
+
       csvview = {
         enable = true;
       };
