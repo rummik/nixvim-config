@@ -16,7 +16,6 @@
                                     # replaces the UI for messages, cmdline and
                                     # the popupmenu.
     ./notify.nix                    # Puts notifications in a little UI bubble
-    ./obsidian.nix                  # Obsidan integration for note taking
     ./persisted.nix                 # Session management
     ./rainbow-delimiters.nix        # Colorize delimiters
     # ./tabby.nix                     # Tabbed buffers

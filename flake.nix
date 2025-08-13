@@ -20,7 +20,10 @@
 
           inherit (flake-parts-lib) importApply;
 
-          nixvimModules.default = ./config;
+          nixvimModules = {
+            default = ./config;
+            obsidian = ./config/environments/obsidian.nix;
+          };
 
           flakeModules.default = importApply ./flake-module.nix {
             inherit withSystem;
