@@ -23,6 +23,7 @@
           nixvimModules = {
             default = ./config;
             typescript = ./config/environments/typescript.nix;
+            python = ./config/environments/python.nix;
             obsidian = ./config/environments/obsidian.nix;
           };
 
@@ -38,6 +39,7 @@
                 modules = modules ++ [
                   nixvimModules.default
                   nixvimModules.typescript
+                  nixvimModules.python
                 ];
               }
             );
