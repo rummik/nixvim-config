@@ -116,6 +116,8 @@
                   languages.nix.enable = true;
 
                   git-hooks.hooks = {
+                    commitizen.enable = true;
+
                     markdownlint = {
                       enable = true;
                       settings.configuration = {
