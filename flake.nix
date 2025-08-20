@@ -24,6 +24,7 @@
             default = ./config;
             typescript = ./config/environments/typescript.nix;
             python = ./config/environments/python.nix;
+            rust = ./config/environments/rust.nix;
             obsidian = ./config/environments/obsidian.nix;
           };
 
@@ -40,6 +41,7 @@
                   nixvimModules.default
                   nixvimModules.typescript
                   nixvimModules.python
+                  nixvimModules.rust
                 ];
               }
             );
