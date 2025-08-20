@@ -3,6 +3,8 @@
     enable = true;
 
     settings = {
+      sign_priority = 150; # Default: 6
+
       signs = {
         add = {
           text = "┃";
