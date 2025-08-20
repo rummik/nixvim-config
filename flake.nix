@@ -95,7 +95,7 @@
 
           partitionedAttrs = {
             devShells = "dev";
-          #templates = "dev";
+            #templates = "dev";
           };
 
           partitions.dev = {
