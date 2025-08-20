@@ -7,6 +7,7 @@
     ./ccc.nix                       # Color code slider with color highlights
     # ./colorizer.nix                 # Color background highlights
     ./comment.nix                   # Toggle comments
+    ./coverage.nix                  # Code coverage
     ./dap.nix                       # Debug Adapter Protocol client
     ./gitsigns.nix                  # Git status in the gutters
     ./indent-blankline.nix          # Indentation guides
