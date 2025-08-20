@@ -26,6 +26,7 @@
             python = ./config/environments/python.nix;
             rust = ./config/environments/rust.nix;
             docker = ./config/environments/docker.nix;
+            godot = ./config/environments/godot.nix;
             obsidian = ./config/environments/obsidian.nix;
           };
 
@@ -44,6 +45,7 @@
                   nixvimModules.python
                   nixvimModules.rust
                   nixvimModules.docker
+                  nixvimModules.godot
                 ];
               }
             );
