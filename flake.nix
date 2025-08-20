@@ -25,6 +25,7 @@
             typescript = ./config/environments/typescript.nix;
             python = ./config/environments/python.nix;
             rust = ./config/environments/rust.nix;
+            docker = ./config/environments/docker.nix;
             obsidian = ./config/environments/obsidian.nix;
           };
 
@@ -42,6 +43,7 @@
                   nixvimModules.typescript
                   nixvimModules.python
                   nixvimModules.rust
+                  nixvimModules.docker
                 ];
               }
             );
