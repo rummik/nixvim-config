@@ -65,7 +65,8 @@
                 return
                   buf.name:match('%.md') or
                   (buf.name:match('%.txt') and not (
-                    buf.name:match('CMake.+%.txt')
+                    buf.name:match('CMake.+%.txt') or
+                    buf.name:match('requirements%.txt')
                   ))
               end
             '';
