@@ -1,0 +1,14 @@
+[scopes.default]
+description = "Nixvim configuration"
+options-list-cmd = """
+    nix eval .#nixvimConfigurations.x86_64-linux.default --json --apply '
+      opts:
+      builtins.filter
+        (v: v.visible && !v.internal)
+        (opts._module.args.pkgs.lib.optionAttrSetToDocList opts.options)
+    '
+  """
+evaluator = """
+    nix eval --impure .#nixvimConfigurations.x86_64-linux.default.config \
+      --apply "import ./optnix-evaluator.nix ''{{ .Option }}''"
+  """

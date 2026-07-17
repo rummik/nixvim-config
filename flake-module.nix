@@ -1,26 +1,27 @@
-localFlake:
-{ lib, config, self, inputs, ... }:
+{
+  lib,
+  inputs,
+  options,
+  ...
+}:
 let
   inherit (lib) mkOption types;
-  inherit (inputs) nixvim nixvim-modules;
-in {
+  inherit (inputs) nixvim;
+in
+{
   imports = [
-    nixvim.flakeModules.default
+    inputs.nixvim.flakeModule
 
-    nixvim-modules.flakeModules.default
+    ./config
   ];
 
   options = {
-    __nixvimProfiles = mkOption {
-      type = types.listOf types.deferredModule;
-    };
-
     nixvimConfigurations = mkOption {
       type = types.attrsOf types.deferredModule;
     };
   };
 
-  config.systems = lib.systems.flakeExposed;
+  config.nixvimConfigurations = [ ./nvim-profile.nix ];
 
   config.nixvim = {
     packages = {
@@ -34,19 +35,34 @@ in {
     };
   };
 
-  config.__nixvimProfiles = lib.mkForce config.nixvimProfiles;
+  config.perSystem =
+    {
+      system,
+      self',
+      pkgs,
+      ...
+    }:
+    let
+      inherit (self'.packages) nvim;
 
-  config.perSystem = { self', inputs', pkgs, lib, system, ... }: {
+      nvimpager' = pkgs.nvimpager.override { neovim = nvim; };
+      nvimpager = nvimpager'.overrideAttrs (
+        final: prev: {
+          # doCheck = false;
+        }
+      );
+    in
+    {
+      nixvimConfigurations.default = nixvim.lib.evalNixvim {
+        inherit system;
 
-    nixvimConfigurations.default = nixvim.lib.evalNixvim {
-      inherit system;
+        modules = options.nixvimProfiles.value ++ [ ./nvim-profile.nix ];
+      };
 
-      modules = config.__nixvimProfiles;
+      packages = {
+        default = nvim;
+
+        inherit nvimpager;
+      };
     };
-
-    packages.default = self'.packages.nvim;
-    packages.nvimpager = pkgs.nvimpager.override {
-      neovim = self'.packages.nvim;
-    };
-  };
 }

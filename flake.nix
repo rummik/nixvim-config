@@ -2,54 +2,31 @@
   description = "Maxine's Neovim configuration";
 
   inputs = {
-    # see .envrc file for more info on what this is
-    devenv-root = {
-      url = "file+file:///dev/null";
-      flake = false;
-    };
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
 
     nixvim.url = "github:nix-community/nixvim/nixos-25.11";
     nixvim.inputs.flake-parts.follows = "flake-parts";
-    nixvim.inputs.nixpkgs.url = "github:NixOS/nixpkgs/25.11";
-
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    flake-parts.inputs.nixpkgs-lib.follows = "nixvim/nixpkgs";
-
-    nixpkgs.follows = "nixvim/nixpkgs";
-
-    flake-module  = { url = ./flake-module.nix;   flake = false; };
-    partitions    = { url = ./partitions.nix;     flake = false; };
-
-    nixvim-modules = {
-      url = ./config;
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
-    };
+    nixvim.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  nixConfig = {
-    extra-trusted-public-keys = "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=";
-    extra-substituters = "https://devenv.cachix.org";
-  };
-
-  outputs = { self, flake-parts, nixvim-modules, nixvim, ... }@inputs:
+  outputs =
+    { flake-parts, ... }@inputs:
     flake-parts.lib.mkFlake { inherit inputs; } (
-      let
-        inherit (inputs) nixpkgs flake-module partitions;
-        inherit (flake-parts) lib;
+      { lib, ... }:
+      {
+        systems = lib.systems.flakeExposed;
 
-        importApply = nixpkgs.lib.flip lib.importApply { inherit inputs; };
-      in {
-        imports = builtins.map importApply [ flake-module partitions ];
-
-        # todo: select multiple users and switch between user modes at runtime?
-        nixvimUser = "maxine";
+        imports = [ ./flake-module.nix ];
 
         nixvimEnvironments = [
           "rust"
+          "cpp"
           # "java"
           # "spyglass"
-          # "typescript"
+          "typescript"
           "python"
           "docker"
           # "godot"
