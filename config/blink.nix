@@ -85,7 +85,7 @@
             # "luasnip"
             "buffer"
             "emoji"
-            "spell"
+            # "spell"
             # "omni"
           ];
 

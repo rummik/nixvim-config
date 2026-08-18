@@ -25,5 +25,6 @@
           score_offset = 100;
           opts = {};
         };
+        blink-cmp.settings.sources.default = [ "spell" ];
       };
 }
