@@ -1,31 +1,44 @@
-{ lib, ... }:
+{ lib, inputs, ... }:
 let
   inherit (lib) mkOption types;
 
   swap = x: f: f x;
+  pipe' = lib.flip lib.pipe;
 
   allPredicates = preds: item: builtins.all (swap item) preds;
 
-  environments =
-    with builtins;
+  valid-environments =
     let
-      environments' = lib.filter (allPredicates [
-        ({ value, ... }: value == "regular")
-        ({ name, ... }: lib.hasSuffix ".nix" name)
-      ]) (lib.attrsToList (readDir ./.));
+      environments' =
+        lib.filter
+          (
+            allPredicates
+              [
+                ({ value, ... }: value == "regular")
+                ({ name, ... }: lib.hasSuffix ".nix" name)
+              ]
+          )
+          (lib.attrsToList (builtins.readDir ./.));
     in
-    map ({ name, ... }: lib.removeSuffix ".nix" name) environments';
-
-  environment = types.coercedTo (types.addCheck types.str (lib.flip builtins.elem environments)) (
-    x: ./. + "/${x}.nix"
-  ) types.pathInStore;
+      builtins.map ({ name, ... }: lib.removeSuffix ".nix" name) environments';
 in
 {
   imports = [ ];
 
   options = {
     nixvimEnvironments = mkOption {
-      type = types.listOf environment;
+      type =
+        types.coercedTo
+          (types.listOf (types.enum valid-environments))
+          (pipe'
+            [
+              lib.unique
+              (builtins.map (x: ./. + "/${x}.nix"))
+              (builtins.map import)
+              (swap { inherit inputs; })
+            ]
+          )
+          (types.listOf types.deferredModule);
     };
   };
 

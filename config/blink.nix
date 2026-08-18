@@ -102,15 +102,6 @@
       };
     };
 
-    # Spelling
-    blink-cmp-spell.enable = true;
-    blink-cmp.settings.sources.providers.spell = {
-      module = "blink-cmp-spell";
-      name = "Spell";
-      score_offset = 100;
-      opts = {};
-    };
-
     # Emoji
     blink-emoji.enable = true;
     blink-cmp.settings.sources.providers.emoji = {

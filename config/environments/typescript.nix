@@ -1,3 +1,4 @@
+{ inputs, ... }:
 { config, lib, ... }: {
   config.plugins = {
     typescript-tools.enable = true;

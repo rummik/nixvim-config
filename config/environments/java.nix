@@ -1,3 +1,4 @@
+{ inputs, ... }:
 { config, pkgs, ... }:
 {
   # config.plugins.lsp.servers.jdtls = {

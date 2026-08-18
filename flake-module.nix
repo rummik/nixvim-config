@@ -15,6 +15,8 @@ in
     ./config
   ];
 
+  options.nixpkgs.allowUnfree = lib.mkEnableOption "nixpkgs.allowUnfree";
+
   options = {
     nixvimConfigurations = mkOption {
       type = types.attrsOf types.deferredModule;
@@ -31,7 +33,7 @@ in
 
     checks = {
       enable = true;
-      nameFunction = name: "nixvim-" + name + "-test";
+      nameFunction = name: "nixvim-${name}-test";
     };
   };
 
@@ -53,16 +55,34 @@ in
       );
     in
     {
-      nixvimConfigurations.default = nixvim.lib.evalNixvim {
-        inherit system;
+      _module.args.nixpkgs =
+        (import inputs.nixpkgs)
+          {
+            overlays = [];
+            allowUnfree = options.nixpkgs.allowUnfree.value;
+          };
 
-        modules = options.nixvimProfiles.value ++ [ ./nvim-profile.nix ];
-      };
+      nixvimConfigurations.default =
+        nixvim.lib.evalNixvim
+          {
+            inherit system;
 
-      packages = {
-        default = nvim;
+            modules =
+              options.nixvimProfiles.value
+            ++
+              [
+                ./nvim-profile.nix
+                { nixpkgs.pkgs = pkgs; }
+              ];
+          };
 
-        inherit nvimpager;
-      };
+      packages =
+        {
+          default = nvim;
+
+          inherit nvimpager;
+        };
+
+      
     };
 }

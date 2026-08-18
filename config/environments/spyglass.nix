@@ -1,18 +1,26 @@
+{ inputs, ... }:
 { pkgs, lib, ... }:
+let
+  system = pkgs.stdenv.buildPlatform.system;
+in
 {
   config.plugins = {
     lsp.servers = {
-      spyglass-mc.enable = true;
-      mcfunction.enable = true;
-    };
-
-    # spyglass-mc.package = pkgs.minecraft-utils.lang-servers.spyglass;
-    # mcfunction.package = pkgs.minecraft-utils.lang-servers.mcfunction;
-
-    package-info = {
-      enable = true;
-      enableTelescope = true;
-      settings.package_manager = lib.mkDefault "npm";
+      jsonls.enable = true;
+      spyglassmc_language_server =
+        {
+          enable = true;
+          package = inputs.spyglassmc.packages.${system}.default;
+          rootMarkers = [ "pack.mcmeta" ];
+          filetypes =
+            [
+              "mcmeta"
+              "json"
+              "mcfunction"
+              "snbt"
+              "mcdoc"
+            ];
+        };
     };
   };
 

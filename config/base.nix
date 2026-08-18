@@ -6,8 +6,6 @@
   performance.byteCompileLua.enable = true;
 
   plugins = {
-    # nix.enable = true;
-
     # aw-watcher.enable = true;                 # activitywatch watcher integration -- disabled due to slow tab switching
 
     neoconf.enable = true; # Global and project-local settings management
@@ -131,15 +129,6 @@
           week_header.enable = true;
         };
       };
-    };
-
-    # Show where the cursor is when jumping large distances
-    specs = {
-      enable = true;
-      settings.min_jump = 20;
-      settings.popup.winhl = "PmenuSel";
-      settings.pop.fader.__raw = "require('specs').exp_fader";
-      settings.pop.resizer.__raw = "require('specs').shrink_resizer";
     };
 
     # smear-cursor = {

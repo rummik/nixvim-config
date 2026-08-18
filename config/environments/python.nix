@@ -1,3 +1,4 @@
+{ inputs, ... }:
 { config, ... }: {
   config.plugins = {
     dap-python.enable = true;
