@@ -43,6 +43,17 @@
               "docker"
               # "godot"
             ];
+
+          perSystem =
+            { pkgs, ... }:
+            {
+              apps.optnix =
+                {
+                  type = "app";
+                  meta.description = "run optnix on nixvim's options";
+                  program = pkgs.optnix;
+                };
+            };
         }
       );
 }
