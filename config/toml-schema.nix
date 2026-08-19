@@ -1,0 +1,3 @@
+{
+  filetype.extension.tosd = "toml";
+}

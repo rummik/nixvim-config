@@ -52,6 +52,7 @@ in
                 ./render-markdown.nix # Markdown in-editor rendering
                 # ./tabby.nix                   # Tabbed buffers
                 ./telescope.nix # Fuzzy finder, file browser, etc.
+                ./toml-schema.nix # TOML-native schema-validation for toml files
                 ./transparent.nix # Make the editor transparent
                 ./treesitter.nix # Use treesitter for handling syntax
                 ./trouble.nix # LSP diagnostics
