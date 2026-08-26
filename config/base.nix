@@ -166,6 +166,7 @@
 
   # Always use clipboard
   clipboard.register = "unnamedplus";
+  clipboard.providers.xclip.enable = true;
   # globals.clipboard = "tmux";
 
   opts = {
